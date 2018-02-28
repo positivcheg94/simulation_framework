@@ -7,6 +7,7 @@
 #include <smpp/smpp.hpp>
 #include <smpp/task.hpp>
 #include <smpp/processor.hpp>
+#include <smpp/task_processor.hpp>
 
 
 int main()
@@ -20,9 +21,11 @@ int main()
 	mips.emplace_back(nominal_mips);
 	mips.emplace_back(nominal_mips);
 
-	auto tasks = smpp::mmsim::create_tasks<task>(5000, { 2,2 });
-	auto res = smpp::simulate<processor,task, task::small_first, processor::slow_first>(mips, std::move(tasks));
+	auto tasks = smpp::mmsim::create_tasks<task>(5000, { 50,50 });
+	smpp::TaskProcessorWithTicker tp(0.001);
+	//smpp::TaskProcessor tp;
+	auto res = smpp::simulate<processor,task, task::small_first, processor::slow_first>(mips, std::move(tasks), tp);
 
-	std::cout << res.begin()->expected_completition_time << std::endl;
+	std::cout << res.back().expected_completition_time << std::endl;
 	return 0;
 }
