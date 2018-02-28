@@ -24,9 +24,11 @@
     <ClInclude Include="simpp\object\Object.hpp" />
     <ClInclude Include="smpp\mmsim.hpp" />
     <ClInclude Include="smpp\priority_queue.hpp" />
+    <ClInclude Include="smpp\processor.hpp" />
     <ClInclude Include="smpp\smpp.hpp" />
     <ClInclude Include="smpp\task.hpp" />
     <ClInclude Include="smpp\task_completition.hpp" />
+    <ClInclude Include="smpp\task_processor.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

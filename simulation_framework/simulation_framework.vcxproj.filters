@@ -63,6 +63,12 @@
     <ClInclude Include="smpp\task_completition.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="smpp\task_processor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smpp\processor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
