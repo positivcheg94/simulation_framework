@@ -110,32 +110,48 @@ int main(int argc, char* argv[])
 		file.precision(20);
 		if (!file.is_open())
 			throw std::runtime_error("couldn't open file");
-		file << "Slice First,";
-		if (!single_player)
-			file << "Slice Second,";
-		file << "Time First,";
-		if (!single_player)
-			file << "Time Second" << std::endl;
 
-		for(size_t i = slice_start; i < slice_end; i+=slice_step)
-			for (size_t j = slice_start; j < slice_end; j += slice_step)
+		if(single_player)
+		{
+			file << "Slice,Time" << std::endl;
+			for (size_t i = slice_start; i < slice_end; i += slice_step)
 			{
-				file << i << ',' << j << ',';
-				auto tasks = smpp::mmsim::create_tasks<task>(problem_size, { i, j });
-				std::valarray<double> result = simulate(procs, proc_comparator, std::move(tasks), task_comparator, *tp, 2, do_shuffle);
+				file << i << ',';
+				auto tasks = smpp::mmsim::create_tasks<task>(problem_size, { i});
+				std::valarray<double> result = simulate(procs, proc_comparator, std::move(tasks), task_comparator, *tp, 1, do_shuffle);
 				for (size_t times = 1; times < randomize_count; ++times)
 				{
-					tasks	= smpp::mmsim::create_tasks<task>(problem_size, { i, j });
-					result	+= simulate(procs, proc_comparator, std::move(tasks), task_comparator, *tp, 2, do_shuffle);
+					tasks = smpp::mmsim::create_tasks<task>(problem_size, { i });
+					result += simulate(procs, proc_comparator, std::move(tasks), task_comparator, *tp, 1, do_shuffle);
 				}
 				if (randomize_count != 0)
 					result /= randomize_count;
 				file << result[0];
-				if(!single_player)
-					file << ',' << result[1];
 				file << std::endl;
 				file.flush();
 			}
+		}
+		else
+		{
+			file << "Slice First,Slice Second,Time First,Time Second" << std::endl;
+			for (size_t i = slice_start; i < slice_end; i += slice_step)
+				for (size_t j = slice_start; j < slice_end; j += slice_step)
+				{
+					file << i << ',' << j << ',';
+					auto tasks = smpp::mmsim::create_tasks<task>(problem_size, { i, j });
+					std::valarray<double> result = simulate(procs, proc_comparator, std::move(tasks), task_comparator, *tp, 2, do_shuffle);
+					for (size_t times = 1; times < randomize_count; ++times)
+					{
+						tasks = smpp::mmsim::create_tasks<task>(problem_size, { i, j });
+						result += simulate(procs, proc_comparator, std::move(tasks), task_comparator, *tp, 2, do_shuffle);
+					}
+					if (randomize_count != 0)
+						result /= randomize_count;
+					file << result[0] << ',' << result[1];
+					file << std::endl;
+					file.flush();
+				}
+		}
 	}
 	catch(const std::exception& ex)
 	{

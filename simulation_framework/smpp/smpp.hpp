@@ -19,7 +19,7 @@ namespace smpp
 		std::vector<Processor> procs, Processor::comparator proc_comp,
 		std::vector<SimpleTask>&& tasks, SimpleTask::comparator task_comp,
 		const TaskProcessor& tprocessor,
-		const size_t n_user_hint,
+		const SimpleTask::userid_type n_user_hint,
 		const bool shuffle = true
 	)
 	{
@@ -38,7 +38,7 @@ namespace smpp
 
 		auto processed_tasks = tprocessor(procs, tasks_to_process);
 
-		std::set<size_t> idx;
+		std::set<SimpleTask::userid_type> idx;
 		std::valarray<double> times(n_user_hint);
 
 		//size_t previous_idx = std::numeric_limits<size_t>::max();

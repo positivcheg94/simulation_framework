@@ -11,7 +11,7 @@ namespace smpp
 		inline size_t calculate_number_of_tasks(const size_t problem_size, const size_t slice_size)
 		{
 			const auto n_full = problem_size / slice_size;
-			const auto partial = problem_size % slice_size == 0;
+			const auto partial = (problem_size % slice_size) != 0;
 			if (partial)
 				return n_full * (n_full + 2) + 1;
 			return n_full * n_full;
@@ -58,7 +58,7 @@ namespace smpp
 			const auto n_tasks = calculate_number_of_tasks(problem_size, slice_sizes);
 			std::vector<Task> tasks;
 			tasks.reserve(n_tasks);
-			size_t user_id = 0;
+			typename Task::userid_type user_id = 0;
 			for (auto& slice_size : slice_sizes)
 			{
 				size_t n;

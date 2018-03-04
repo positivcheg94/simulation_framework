@@ -6,14 +6,16 @@ namespace smpp
 {
 	struct SimpleTask
 	{
+		typedef uint8_t userid_type;
+
 		typedef std::function<bool(const SimpleTask&, const SimpleTask&)> comparator;
 
-		static SimpleTask create(const double complexity, const size_t n_numbers, const size_t userid)
+		static SimpleTask create(const double complexity, const size_t n_numbers, const userid_type userid)
 		{
 			return SimpleTask(complexity, sizeof(double)*n_numbers, userid);
 		}
 
-		explicit SimpleTask(const double complexity, const size_t bytes_to_transfer, const size_t userid)
+		explicit SimpleTask(const double complexity, const size_t bytes_to_transfer, const userid_type userid)
 			: complexity(complexity), bytes_to_transfer(bytes_to_transfer), userid(userid)
 		{
 
@@ -34,9 +36,9 @@ namespace smpp
 		SimpleTask& operator=(SimpleTask&&) = default;
 		SimpleTask& operator=(const SimpleTask&) = default;
 
-		double complexity;
-		size_t bytes_to_transfer = 0;
-		size_t userid			 = 0;
+		double		complexity;
+		size_t		bytes_to_transfer	= 0;
+		userid_type	userid				= 0;
 	};
 }
 
