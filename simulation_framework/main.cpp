@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 	{
 		po::options_description desc("Allowed options");
 		desc.add_options()
-			("help", "produce help message")
+			("help"					, "produce help message")
 			//general simulation params
 			("problem_size"			, po::value<size_t>()->required()							, "problem size"												)
 			("nominal_mips"			, po::value<double>()->default_value(1e10)					, "nominal mips value"											)
@@ -42,19 +42,21 @@ int main(int argc, char* argv[])
 			("slices"				, po::value<std::vector<size_t>>()->multitoken()->required(), "slice params (min slice, max slice, step)"					)
 
 			("randomize_count"		, po::value<size_t>()->default_value(1)						, "how many times to simulate with shufling"					)
+			("single_player"		, po::value<bool>()->default_value(false)					, "make single player simulation"								)
 
 			("output"				, po::value<std::string>()->default_value("results.txt")	, "output file"													)
 			;
 
 		po::variables_map vm;
 		po::store(po::parse_command_line(argc, argv, desc), vm);
-		po::notify(vm);
 
 		if(vm.count("help"))
 		{
 			std::cout << desc << std::endl;
 			return 0;
 		}
+
+		po::notify(vm);
 
 		const size_t problem_size = vm["problem_size"].as<size_t>();
 		const double nominal_mips = vm["nominal_mips"].as<double>();
@@ -99,7 +101,8 @@ int main(int argc, char* argv[])
 		const size_t slice_step		= slices[2];
 
 		const size_t	randomize_count = vm["randomize_count"].as<size_t>();
-		const bool		do_shuffle		= randomize_count == 0;
+		const bool		do_shuffle		= randomize_count != 0;
+		const bool		single_player	= vm["single_player"].as<bool>();
 
 		const std::string fname = vm["output"].as<std::string>();
 
@@ -107,7 +110,12 @@ int main(int argc, char* argv[])
 		file.precision(20);
 		if (!file.is_open())
 			throw std::runtime_error("couldn't open file");
-		file << "Slice First,Slice Second,Time First, Time Second" << std::endl;
+		file << "Slice First,";
+		if (!single_player)
+			file << "Slice Second,";
+		file << "Time First,";
+		if (!single_player)
+			file << "Time Second" << std::endl;
 
 		for(size_t i = slice_start; i < slice_end; i+=slice_step)
 			for (size_t j = slice_start; j < slice_end; j += slice_step)
@@ -122,7 +130,10 @@ int main(int argc, char* argv[])
 				}
 				if (randomize_count != 0)
 					result /= randomize_count;
-				file << result[0] << ',' << result[1] << std::endl;
+				file << result[0];
+				if(!single_player)
+					file << ',' << result[1];
+				file << std::endl;
 				file.flush();
 			}
 	}

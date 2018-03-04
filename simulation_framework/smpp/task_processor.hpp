@@ -17,10 +17,11 @@ namespace smpp
 		typedef priority_queue<task_completition<task>, typename task_completition<task>::later_first> task_queue;
 		
 
-		virtual std::list<task_completition<task>> operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const
+		virtual std::vector<task_completition<task>> operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const
 		{
 			task_queue p_queue;
-			std::list<task_completition<task>> processed_tasks;
+			std::vector<task_completition<task>> processed_tasks;
+			processed_tasks.reserve(tasks.size());
 
 			auto task_iterator = tasks.begin();
 			for (size_t i = 0; i < procs.size() && task_iterator != tasks.end(); ++i)
@@ -39,7 +40,7 @@ namespace smpp
 					p_queue.emplace(tk.expected_completition_time + time_to_process, tk.worker_index, std::move(*task_iterator));
 					++task_iterator;
 				}
-				processed_tasks.push_back(std::move(tk));
+				processed_tasks.emplace_back(std::move(tk));
 			}
 
 			return processed_tasks;
@@ -67,10 +68,11 @@ namespace smpp
 			return bytes_to_transfer / bandwidth + connection_setup;
 		}
 
-		std::list<task_completition<task>> operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const override
+		std::vector<task_completition<task>> operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const override
 		{
 			task_queue p_queue;
-			std::list<task_completition<task>> processed_tasks;
+			std::vector<task_completition<task>> processed_tasks;
+			processed_tasks.reserve(tasks.size());
 
 			auto task_iterator = tasks.begin();
 			for (size_t i = 0; i < procs.size() && task_iterator != tasks.end(); ++i)
@@ -93,7 +95,7 @@ namespace smpp
 					p_queue.emplace(tk.expected_completition_time + time_to_process, tk.worker_index, std::move(*task_iterator));
 					++task_iterator;
 				}
-				processed_tasks.push_back(std::move(tk));
+				processed_tasks.emplace_back(std::move(tk));
 			}
 
 			return processed_tasks;
@@ -113,10 +115,11 @@ namespace smpp
 		{
 		}
 
-		std::list<task_completition<task>> operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const override
+		std::vector<task_completition<task>> operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const override
 		{
 			task_queue p_queue;
-			std::list<task_completition<task>> processed_tasks;
+			std::vector<task_completition<task>> processed_tasks;
+			processed_tasks.reserve(tasks.size());
 
 			std::vector<size_t> free_procs(procs.size());
 
@@ -140,14 +143,14 @@ namespace smpp
 				// calculate next simulation time
 				double next_simulation_time = std::max(simulation_internal_time + tick_period, first_tk.expected_completition_time);
 				// add move popped task to processed
-				processed_tasks.push_back(std::move(first_tk));
+				processed_tasks.emplace_back(std::move(first_tk));
 				while (!p_queue.empty())
 				{
 					if (p_queue.top().expected_completition_time > next_simulation_time)
 						break;
 					auto tk = p_queue.pop();
 					free_procs.push_back(tk.worker_index);
-					processed_tasks.push_back(std::move(tk));
+					processed_tasks.emplace_back(std::move(tk));
 				}
 				simulation_internal_time = next_simulation_time;
 
