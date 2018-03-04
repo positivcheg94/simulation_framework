@@ -6,8 +6,7 @@ namespace smpp
 {
 	struct Processor
 	{
-		typedef std::less<Processor>	slow_first;
-		typedef std::greater<Processor>	fast_first;
+		typedef std::function<bool(const Processor&, const Processor&)> comparator;
 
 		explicit Processor(const double mips)
 			: mips(mips)
@@ -24,6 +23,16 @@ namespace smpp
 		double time_to_complete(const double complexity) const
 		{
 			return complexity / mips;
+		}
+
+		static comparator slow_first()
+		{
+			return [](const Processor& l, const Processor& r) -> bool { return  l.mips < r.mips; };
+		}
+
+		static comparator fast_first()
+		{
+			return [](const Processor& l, const Processor& r) -> bool { return  l.mips > r.mips; };
 		}
 
 		double mips;
