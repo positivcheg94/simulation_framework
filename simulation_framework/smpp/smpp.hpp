@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <valarray>
 #include <list>
 #include <functional>
 #include <random>
@@ -14,7 +15,7 @@
 
 namespace smpp
 {
-	std::vector<double> simulate(
+	std::valarray<double> simulate(
 		std::vector<Processor> procs, Processor::comparator proc_comp,
 		std::vector<SimpleTask>&& tasks, SimpleTask::comparator task_comp,
 		const TaskProcessor& tprocessor,
@@ -38,7 +39,7 @@ namespace smpp
 		auto processed_tasks = tprocessor(procs, tasks_to_process);
 
 		std::set<size_t> idx;
-		std::vector<double> times(n_user_hint);
+		std::valarray<double> times(n_user_hint);
 
 		//size_t previous_idx = std::numeric_limits<size_t>::max();
 		for (auto curr = processed_tasks.crbegin(); curr != processed_tasks.crend(); ++curr)

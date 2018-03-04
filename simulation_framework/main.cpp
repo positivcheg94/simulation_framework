@@ -6,6 +6,7 @@
 
 #include <boost/algorithm/string.hpp>    
 #include <boost/program_options.hpp>
+#include <valarray>
 namespace po = boost::program_options;
 
 #include <smpp/mmsim.hpp>
@@ -39,6 +40,8 @@ int main(int argc, char* argv[])
 			("ping"					, po::value<double>()->default_value(1e-5)					, "ping with each processing unit (one value for all)"			)
 			// slice params
 			("slices"				, po::value<std::vector<size_t>>()->multitoken()->required(), "slice params (min slice, max slice, step)"					)
+
+			("randomize_count"		, po::value<size_t>()->default_value(1)						, "how many times to simulate with shufling"					)
 
 			("output"				, po::value<std::string>()->default_value("results.txt")	, "output file"													)
 			;
@@ -95,6 +98,9 @@ int main(int argc, char* argv[])
 		const size_t slice_end		= slices[1];
 		const size_t slice_step		= slices[2];
 
+		const size_t	randomize_count = vm["randomize_count"].as<size_t>();
+		const bool		do_shuffle		= randomize_count == 0;
+
 		const std::string fname = vm["output"].as<std::string>();
 
 		std::ofstream file(fname);
@@ -108,8 +114,15 @@ int main(int argc, char* argv[])
 			{
 				file << i << ',' << j << ',';
 				auto tasks = smpp::mmsim::create_tasks<task>(problem_size, { i, j });
-				auto res = simulate(procs, proc_comparator, std::move(tasks), task_comparator, *tp, 2);
-				file << res[0] << ',' << res[1] << std::endl;
+				std::valarray<double> result = simulate(procs, proc_comparator, std::move(tasks), task_comparator, *tp, 2, do_shuffle);
+				for (size_t times = 1; times < randomize_count; ++times)
+				{
+					tasks	= smpp::mmsim::create_tasks<task>(problem_size, { i, j });
+					result	+= simulate(procs, proc_comparator, std::move(tasks), task_comparator, *tp, 2, do_shuffle);
+				}
+				if (randomize_count != 0)
+					result /= randomize_count;
+				file << result[0] << ',' << result[1] << std::endl;
 				file.flush();
 			}
 	}
