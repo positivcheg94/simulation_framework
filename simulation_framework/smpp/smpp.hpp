@@ -44,7 +44,7 @@ namespace smpp
 		//size_t previous_idx = std::numeric_limits<size_t>::max();
 		for (auto curr = processed_tasks.crbegin(); curr != processed_tasks.crend(); ++curr)
 		{
-			auto curr_idx = curr->task.userid;
+			auto curr_idx = curr->task->userid;
 			if (idx.insert(curr_idx).second)
 			{
 				times[curr_idx] = curr->expected_completition_time;

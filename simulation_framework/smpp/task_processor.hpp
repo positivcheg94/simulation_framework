@@ -14,10 +14,10 @@ namespace smpp
 	struct TaskProcessor
 	{
 		typedef SimpleTask task;
-		typedef priority_queue<task_completition<task>, typename task_completition<task>::later_first> task_queue;
+		typedef priority_queue<task_completition<task*>, typename task_completition<task*>::later_first> task_queue;
 		
 
-		virtual std::vector<task_completition<task>> operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const = 0;
+		virtual std::vector<task_completition<task*>> operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const = 0;
 	};
 
 	struct TaskProcessorWithTransfer : TaskProcessor
@@ -39,17 +39,17 @@ namespace smpp
 			return bytes_to_transfer / bandwidth + connection_setup;
 		}
 
-		std::vector<task_completition<task>> operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const override
+		std::vector<task_completition<task*>> operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const override
 		{
 			task_queue p_queue;
-			std::vector<task_completition<task>> processed_tasks;
+			std::vector<task_completition<task*>> processed_tasks;
 			processed_tasks.reserve(tasks.size());
 
 			auto task_iterator = tasks.begin();
 			for (size_t i = 0; i < procs.size() && task_iterator != tasks.end(); ++i)
 			{
-				auto time_to_process = procs[i].time_to_complete(task_iterator->complexity);
-				p_queue.emplace(time_to_process, i, std::move(*task_iterator));
+				const auto time_to_process = procs[i].time_to_complete(task_iterator->complexity);
+				p_queue.emplace(time_to_process, i, &(*task_iterator));
 				++task_iterator;
 			}
 
@@ -63,7 +63,7 @@ namespace smpp
 						+
 						transfer_time(task_iterator->bytes_to_transfer)						// time for data transfer
 						;
-					p_queue.emplace(tk.expected_completition_time + time_to_process, tk.worker_index, std::move(*task_iterator));
+					p_queue.emplace(tk.expected_completition_time + time_to_process, tk.worker_index, &(*task_iterator));
 					++task_iterator;
 				}
 				processed_tasks.push_back(std::move(tk));
