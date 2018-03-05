@@ -29,6 +29,7 @@ int main(int argc, char* argv[])
 		po::options_description desc("Allowed options");
 		desc.add_options()
 			("help"					, "produce help message")
+			("sim_log"				, "log simulation data")
 			//general simulation params
 			("problem_size"			, po::value<size_t>()->required()							, "problem size"												)
 			("nominal_mips"			, po::value<double>()->default_value(1e10)					, "nominal mips value"											)
@@ -36,7 +37,7 @@ int main(int argc, char* argv[])
 			("task_priority"		, po::value<std::string>()->default_value("min")			, "task scheduling priority"									)
 			("proc_priority"		, po::value<std::string>()->default_value("min")			, "processor choosing priority"									)
 			// task processor
-			("bandwidth"			, po::value<double>()->default_value(1e10)					, "bandwidth with each processing unit (one value for all)"		)
+			("bandwidth"			, po::value<double>()->default_value(5e9/8)					, "bandwidth with each processing unit (one value for all)"		)
 			("ping"					, po::value<double>()->default_value(1e-5)					, "ping with each processing unit (one value for all)"			)
 			// slice params
 			("slices"				, po::value<std::vector<size_t>>()->multitoken()->required(), "slice params (min slice, max slice, step)"					)
@@ -104,7 +105,15 @@ int main(int argc, char* argv[])
 		const bool		do_shuffle		= randomize_count != 0;
 		const bool		single_player	= vm["single_player"].as<bool>();
 
+		const bool sim_log = vm.count("sim_log") > 0;
+		std::ofstream sim_log_file;
+
 		const std::string fname = vm["output"].as<std::string>();
+		if (sim_log)
+		{
+			sim_log_file = std::ofstream(fname + ".log");
+			sim_log_file.precision(20);
+		}
 
 		std::ofstream file(fname);
 		file.precision(20);
@@ -118,15 +127,16 @@ int main(int argc, char* argv[])
 			{
 				file << i << ',';
 				auto tasks = smpp::mmsim::create_tasks<task>(problem_size, { i});
-				std::valarray<double> result = simulate(procs, proc_comparator, std::move(tasks), task_comparator, *tp, 1, do_shuffle);
-				for (size_t times = 1; times < randomize_count; ++times)
+				auto result = simulate(procs, proc_comparator, tasks, task_comparator, *tp, 1, false);
+				if(sim_log)
 				{
-					tasks = smpp::mmsim::create_tasks<task>(problem_size, { i });
-					result += simulate(procs, proc_comparator, std::move(tasks), task_comparator, *tp, 1, do_shuffle);
+					sim_log_file << "Log for slice=" << i << std::endl;
+					std::for_each(result.second.begin(), result.second.end(),[&sim_log_file](auto& val)
+					{
+						sim_log_file << val << std::endl;
+					});
 				}
-				if (randomize_count != 0)
-					result /= randomize_count;
-				file << result[0];
+				file << result.first[0];
 				file << std::endl;
 				file.flush();
 			}
@@ -138,16 +148,29 @@ int main(int argc, char* argv[])
 				for (size_t j = slice_start; j < slice_end; j += slice_step)
 				{
 					file << i << ',' << j << ',';
-					auto tasks = smpp::mmsim::create_tasks<task>(problem_size, { i, j });
-					std::valarray<double> result = simulate(procs, proc_comparator, std::move(tasks), task_comparator, *tp, 2, do_shuffle);
+
+					std::valarray<double> times_array;
+					task_processor::return_type processed_tasks;
+					auto tasks_main = smpp::mmsim::create_tasks<task>(problem_size, { i, j });
+					std::tie(times_array, processed_tasks) = simulate(procs, proc_comparator, tasks_main, task_comparator, *tp, 2, do_shuffle, true);
+					if (sim_log)
+					{
+						sim_log_file << "Log for slice1=" << i << "|slice2=" << j << std::endl;
+						sim_log_file.flush();
+						std::for_each(processed_tasks.begin(), processed_tasks.end(), [&sim_log_file](auto& val)
+						{
+							sim_log_file << val << std::endl;
+						});
+						sim_log_file.flush();
+					}
 					for (size_t times = 1; times < randomize_count; ++times)
 					{
-						tasks = smpp::mmsim::create_tasks<task>(problem_size, { i, j });
-						result += simulate(procs, proc_comparator, std::move(tasks), task_comparator, *tp, 2, do_shuffle);
+						auto tasks = smpp::mmsim::create_tasks<task>(problem_size, { i, j });
+						times_array += simulate(procs, proc_comparator, tasks, task_comparator, *tp, 2, do_shuffle).first;
 					}
 					if (randomize_count != 0)
-						result /= randomize_count;
-					file << result[0] << ',' << result[1];
+						times_array /= randomize_count;
+					file << times_array[0] << ',' << times_array[1];
 					file << std::endl;
 					file.flush();
 				}

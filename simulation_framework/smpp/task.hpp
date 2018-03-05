@@ -36,6 +36,12 @@ namespace smpp
 		SimpleTask& operator=(SimpleTask&&) = default;
 		SimpleTask& operator=(const SimpleTask&) = default;
 
+		friend std::ostream& operator<< (std::ostream& stream, const SimpleTask& task)
+		{
+			stream << task.complexity << ',' << task.bytes_to_transfer << ',' << int(task.userid);
+			return stream;
+		}
+
 		double		complexity;
 		size_t		bytes_to_transfer	= 0;
 		userid_type	userid				= 0;

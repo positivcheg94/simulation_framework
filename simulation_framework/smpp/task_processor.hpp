@@ -13,17 +13,21 @@ namespace smpp
 {
 	struct TaskProcessor
 	{
-		typedef SimpleTask task;
-		typedef priority_queue<task_completition<task*>, typename task_completition<task*>::later_first> task_queue;
+		typedef SimpleTask	task;
+		typedef task*		task_ptr;
+		typedef priority_queue<task_completition<task_ptr>, typename task_completition<task_ptr>::later_first> task_queue;
+		typedef std::vector<task_completition<task_ptr>> return_type;
 		
 
-		virtual std::vector<task_completition<task*>> operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const = 0;
+		virtual return_type operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const = 0;
 	};
 
 	struct TaskProcessorWithTransfer : TaskProcessor
 	{
 		typedef TaskProcessor::task			task;
+		typedef TaskProcessor::task_ptr		task_ptr;
 		typedef TaskProcessor::task_queue	task_queue;
+		typedef TaskProcessor::return_type	return_type;
 
 		TaskProcessorWithTransfer(
 			double bandwidth		= 1.25e+7, // ~100 mbit/s
@@ -39,17 +43,17 @@ namespace smpp
 			return bytes_to_transfer / bandwidth + connection_setup;
 		}
 
-		std::vector<task_completition<task*>> operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const override
+		return_type operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const override
 		{
 			task_queue p_queue;
-			std::vector<task_completition<task*>> processed_tasks;
+			return_type processed_tasks;
 			processed_tasks.reserve(tasks.size());
 
 			auto task_iterator = tasks.begin();
 			for (size_t i = 0; i < procs.size() && task_iterator != tasks.end(); ++i)
 			{
 				const auto time_to_process = procs[i].time_to_complete(task_iterator->complexity);
-				p_queue.emplace(time_to_process, i, &(*task_iterator));
+				p_queue.emplace(0.0, time_to_process, i, &(*task_iterator));
 				++task_iterator;
 			}
 
@@ -63,7 +67,7 @@ namespace smpp
 						+
 						transfer_time(task_iterator->bytes_to_transfer)						// time for data transfer
 						;
-					p_queue.emplace(tk.expected_completition_time + time_to_process, tk.worker_index, &(*task_iterator));
+					p_queue.emplace(tk.time_end, tk.time_end + time_to_process, tk.worker_index, &(*task_iterator));
 					++task_iterator;
 				}
 				processed_tasks.push_back(std::move(tk));

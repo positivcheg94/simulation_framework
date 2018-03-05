@@ -15,15 +15,16 @@
 
 namespace smpp
 {
-	std::valarray<double> simulate(
+	auto simulate(
 		std::vector<Processor> procs, Processor::comparator proc_comp,
-		std::vector<SimpleTask>&& tasks, SimpleTask::comparator task_comp,
+		std::vector<SimpleTask>& tasks, SimpleTask::comparator task_comp,
 		const TaskProcessor& tprocessor,
 		const SimpleTask::userid_type n_user_hint,
-		const bool shuffle = true
+		const bool shuffle = true,
+		const bool return_processed = false
 	)
 	{
-		std::vector<SimpleTask> tasks_to_process = std::move(tasks);
+		auto& tasks_to_process = tasks;
 
 		if (shuffle)
 		{
@@ -47,12 +48,12 @@ namespace smpp
 			auto curr_idx = curr->task->userid;
 			if (idx.insert(curr_idx).second)
 			{
-				times[curr_idx] = curr->expected_completition_time;
+				times[curr_idx] = curr->time_end;
 				if (idx.size() == n_user_hint)
 					break;
 			}
 		}
 
-		return times;
+		return std::make_pair(std::move(times), return_processed ? std::move(processed_tasks) : TaskProcessor::return_type());
 	}
 }
