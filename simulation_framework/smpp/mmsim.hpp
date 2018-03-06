@@ -36,13 +36,13 @@ namespace smpp
 			const auto n_full = problem_size / slice_size;
 			const auto partial = problem_size - n_full * slice_size;
 
-			auto p1 = calculate_complexity(slice_size, slice_size, slice_size);
+			auto p1 = calculate_complexity(slice_size, problem_size, slice_size);
 			if (partial == 0)
 			{
 				return std::make_tuple(n_full, p1, compl_t(), compl_t());
 			}
-			auto p2 = calculate_complexity(partial, slice_size, slice_size);
-			auto p3 = calculate_complexity(partial, slice_size, partial);
+			auto p2 = calculate_complexity(partial, problem_size, slice_size);
+			auto p3 = calculate_complexity(partial, problem_size, partial);
 
 			return std::make_tuple(n_full, p1, p2, p3);
 		}
