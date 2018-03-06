@@ -52,7 +52,11 @@ namespace smpp
 			auto task_iterator = tasks.begin();
 			for (size_t i = 0; i < procs.size() && task_iterator != tasks.end(); ++i)
 			{
-				const auto time_to_process = procs[i].time_to_complete(task_iterator->complexity);
+				const auto time_to_process =
+					procs[i].time_to_complete(task_iterator->complexity)	//main processing time
+					+
+					transfer_time(task_iterator->bytes_to_transfer)			// time for data transfer
+					;
 				p_queue.emplace(0.0, time_to_process, i, &(*task_iterator));
 				++task_iterator;
 			}

@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 			{
 				file << i << ',';
 				auto tasks = smpp::mmsim::create_tasks<task>(problem_size, { i});
-				auto result = simulate(procs, proc_comparator, tasks, task_comparator, *tp, 1, false);
+				auto result = simulate(procs, proc_comparator, tasks, task_comparator, *tp, 1, false, sim_log);
 				if(sim_log)
 				{
 					sim_log_file << "Log for slice=" << i << std::endl;
@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
 					std::valarray<double> times_array;
 					task_processor::return_type processed_tasks;
 					auto tasks_main = smpp::mmsim::create_tasks<task>(problem_size, { i, j });
-					std::tie(times_array, processed_tasks) = simulate(procs, proc_comparator, tasks_main, task_comparator, *tp, 2, do_shuffle, true);
+					std::tie(times_array, processed_tasks) = simulate(procs, proc_comparator, tasks_main, task_comparator, *tp, 2, do_shuffle, sim_log);
 					if (sim_log)
 					{
 						sim_log_file << "Log for slice1=" << i << "|slice2=" << j << std::endl;

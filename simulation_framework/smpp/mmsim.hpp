@@ -27,7 +27,7 @@ namespace smpp
 
 		inline auto calculate_complexity(const size_t m, const size_t n, const size_t k, double multiplication_to_addition = 1.0)
 		{
-			return std::make_pair(m * k*(n*multiplication_to_addition + std::log(n)), m*n + n*k + m*k);
+			return std::make_pair(m * k*(n*multiplication_to_addition + n - 1), m*n + n*k + m*k);
 		}
 
 		inline auto calculate_complexities(const size_t problem_size, const size_t slice_size)
