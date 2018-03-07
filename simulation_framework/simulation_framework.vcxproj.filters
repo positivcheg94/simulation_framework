@@ -15,46 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="impl\entity\Entity.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="impl\entity\MasterEntity.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="impl\entity\SlaveEntity.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="impl\event\Event.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="impl\object\Object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="simpp\object\Object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="simpp\entity\Entity.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="simpp\entity\MasterEntity.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="simpp\entity\SlaveEntity.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="simpp\event\Event.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="simpp\datacenter\Datacenter.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="smpp\mmsim.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="smpp\smpp.hpp">
+    <ClInclude Include="smpp\priority_queue.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="smpp\priority_queue.hpp">
+    <ClInclude Include="smpp\processor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smpp\smpp.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="smpp\task.hpp">
@@ -66,13 +41,5 @@
     <ClInclude Include="smpp\task_processor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="smpp\processor.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

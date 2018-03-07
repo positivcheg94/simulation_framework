@@ -11,17 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="impl\entity\Entity.hpp" />
-    <ClInclude Include="impl\entity\MasterEntity.hpp" />
-    <ClInclude Include="impl\entity\SlaveEntity.hpp" />
-    <ClInclude Include="impl\event\Event.hpp" />
-    <ClInclude Include="impl\object\Object.hpp" />
-    <ClInclude Include="simpp\datacenter\Datacenter.hpp" />
-    <ClInclude Include="simpp\entity\Entity.hpp" />
-    <ClInclude Include="simpp\entity\MasterEntity.hpp" />
-    <ClInclude Include="simpp\entity\SlaveEntity.hpp" />
-    <ClInclude Include="simpp\event\Event.hpp" />
-    <ClInclude Include="simpp\object\Object.hpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="smpp\mmsim.hpp" />
     <ClInclude Include="smpp\priority_queue.hpp" />
     <ClInclude Include="smpp\processor.hpp" />
@@ -29,9 +21,6 @@
     <ClInclude Include="smpp\task.hpp" />
     <ClInclude Include="smpp\task_completition.hpp" />
     <ClInclude Include="smpp\task_processor.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
