@@ -30,17 +30,17 @@ namespace smpp
         typedef TaskProcessor::return_type	return_type;
 
         TaskProcessorWithTransfer(
-            double bandwidth		= 1.25e+7, // ~100 mbit/s
-            double connection_setup = 0.00001  // time to setup connection
+            double bandwidth		= 1e8,      // ~100 mbit/s
+            double connection_setup = 0.00001   // time to setup connection
 
         )
             : bandwidth(bandwidth), connection_setup(connection_setup)
         {
         }
 
-        double transfer_time(size_t bytes_to_transfer) const
+        double transfer_time(size_t bits_to_transfer) const
         {
-            return bytes_to_transfer / bandwidth + connection_setup;
+            return bits_to_transfer / bandwidth + connection_setup;
         }
 
         return_type operator()(const std::vector<Processor>& procs, std::vector<task>& tasks) const override
@@ -55,7 +55,7 @@ namespace smpp
                 const auto time_to_process =
                     procs[i].time_to_complete(task_iterator->complexity)	//main processing time
                     +
-                    transfer_time(task_iterator->bytes_to_transfer)			// time for data transfer
+                    transfer_time(task_iterator->bits_to_transfer)			// time for data transfer
                     ;
                 p_queue.emplace(0.0, time_to_process, i, &(*task_iterator));
                 ++task_iterator;
@@ -69,7 +69,7 @@ namespace smpp
                     const auto time_to_process = 
                         procs[tk.worker_index].time_to_complete(task_iterator->complexity)	//main processing time
                         +
-                        transfer_time(task_iterator->bytes_to_transfer)						// time for data transfer
+                        transfer_time(task_iterator->bits_to_transfer)						// time for data transfer
                         ;
                     p_queue.emplace(tk.time_end, tk.time_end + time_to_process, tk.worker_index, &(*task_iterator));
                     ++task_iterator;

@@ -12,11 +12,11 @@ namespace smpp
 
         static SimpleTask create(const double complexity, const size_t n_numbers, const userid_type userid)
         {
-            return SimpleTask(complexity, sizeof(double)*n_numbers, userid);
+            return SimpleTask(complexity, 8*sizeof(double)*n_numbers, userid);
         }
 
-        explicit SimpleTask(const double complexity, const size_t bytes_to_transfer, const userid_type userid)
-            : complexity(complexity), bytes_to_transfer(bytes_to_transfer), userid(userid)
+        explicit SimpleTask(const double complexity, const size_t bits_to_transfer, const userid_type userid)
+            : complexity(complexity), bits_to_transfer(bits_to_transfer), userid(userid)
         {
 
         }
@@ -38,12 +38,12 @@ namespace smpp
 
         friend std::ostream& operator<< (std::ostream& stream, const SimpleTask& task)
         {
-            stream << task.complexity << ',' << task.bytes_to_transfer << ',' << int(task.userid);
+            stream << task.complexity << ',' << task.bits_to_transfer << ',' << int(task.userid);
             return stream;
         }
 
         double		complexity;
-        size_t		bytes_to_transfer	= 0;
+        size_t		bits_to_transfer	= 0;
         userid_type	userid				= 0;
     };
 }
