@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
         processor::comparator proc_comparator;
         if (proc_priority == "min")
             proc_comparator = processor::slow_first();
-        else if (task_priority == "max")
+        else if (proc_priority == "max")
             proc_comparator = processor::fast_first();
         else
             throw po::validation_error(po::validation_error::invalid_option_value, "proc_priority");
