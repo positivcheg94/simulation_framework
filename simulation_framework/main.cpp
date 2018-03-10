@@ -33,14 +33,15 @@ int main(int argc, char* argv[])
             //general simulation params
             ("problem_size"			, po::value<size_t>()->required()							, "problem size"												)
             ("nominal_mips"			, po::value<double>()->default_value(1e10)					, "nominal mips value"											)
-            ("mips"					, po::value<std::vector<double>>()->required()->multitoken(), "cores mips values as multiplication of nominal"				)
-            ("task_priority"		, po::value<std::string>()->default_value("min")			, "task scheduling priority"									)
-            ("proc_priority"		, po::value<std::string>()->default_value("min")			, "processor choosing priority"									)
+            ("mips"					, po::value<std::vector<double>>()->required()->multitoken(), "cores mips values as multiplication of nominal"              )
+            ("task_priority"		, po::value<std::string>()->default_value("min")			, "task scheduling priority"                                    )
+            ("proc_priority"		, po::value<std::string>()->default_value("min")			, "processor choosing priority"                                 )
             // task processor
-            ("bandwidth"			, po::value<double>()->default_value(1e8)					, "bandwidth with each processing unit (one value for all)"		)
-            ("ping"					, po::value<double>()->default_value(1e-5)					, "ping with each processing unit (one value for all)"			)
+            ("bandwidth"			, po::value<double>()->default_value(1e8)					, "bandwidth with each processing unit (one value for all)"     )
+            ("ping"					, po::value<double>()->default_value(1e-5)					, "ping with each processing unit (one value for all)"          )
             // slice params
-            ("slices"				, po::value<std::vector<size_t>>()->multitoken()->required(), "slice params (min slice, max slice, step)"					)
+            ("slices"				, po::value<std::vector<size_t>>()->multitoken()->required(), "slice params (min slice, max slice, step)"                   )
+            ("fix_first"			, po::value<size_t>()->default_value(0)                     , "fixed first player strategy"                                 )
 
             ("randomize_count"		, po::value<size_t>()->default_value(1)						, "how many times to simulate with shufling"					)
             ("single_player"		, po::value<bool>()->default_value(false)					, "make single player simulation"								)
@@ -97,9 +98,10 @@ int main(int argc, char* argv[])
         const std::vector<size_t> slices = vm["slices"].as<std::vector<size_t>>();
         if(slices.size() != 3)
             throw po::validation_error(po::validation_error::invalid_option_value, "slices");
-        const size_t slice_start	= slices[0];
-        const size_t slice_end		= slices[1];
-        const size_t slice_step		= slices[2];
+        const size_t slice_start    = slices[0];
+        const size_t slice_end      = slices[1];
+        const size_t slice_step     = slices[2];
+        const size_t fix_first      = vm["fix_first"].as<size_t>();
 
         const size_t	randomize_count = vm["randomize_count"].as<size_t>();
         const bool		do_shuffle		= randomize_count != 0;
@@ -144,7 +146,9 @@ int main(int argc, char* argv[])
         else
         {
             file << "Slice First,Slice Second,Time First,Time Second" << std::endl;
-            for (size_t i = slice_start; i < slice_end; i += slice_step)
+            const size_t first_start    = fix_first != 0 ? fix_first        : slice_start;
+            const size_t first_end      = fix_first != 0 ? fix_first + 1    : slice_end;
+            for (size_t i = first_start; i < first_end; i += slice_step)
                 for (size_t j = slice_start; j < slice_end; j += slice_step)
                 {
                     file << i << ',' << j << ',';
