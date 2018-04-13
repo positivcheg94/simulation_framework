@@ -110,7 +110,22 @@ int main(int argc, char* argv[])
         const bool sim_log = vm.count("sim_log") > 0;
         std::ofstream sim_log_file;
 
-        const std::string fname = vm["output"].as<std::string>();
+        std::string fname = vm["output"].as<std::string>();
+        if (fname == "auto")
+        {
+            std::stringstream ss;
+            ss.precision(5);
+            ss << "sim_"    << proc_priority << "_" << task_priority;
+            ss << "_n_"     << problem_size;
+            ss << "_m_"     << std::scientific << nominal_mips;
+            ss << "_bw_"    << std::scientific << bandwidth;
+            ss << "_p_"     << std::scientific << ping;
+            ss << "_rd_"    << randomize_count;
+            if (single_player)
+                ss << "single";
+            ss << ".txt";
+            fname = ss.str();
+        }
         if (sim_log)
         {
             sim_log_file = std::ofstream(fname + ".log");

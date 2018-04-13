@@ -39,7 +39,7 @@ namespace smpp
             auto p1 = calculate_complexity(slice_size, problem_size, slice_size);
             if (partial == 0)
             {
-                return std::make_tuple(n_full, p1, compl_t(), compl_t());
+                return std::make_tuple(n_full, p1, compl_t(0.0, 0), compl_t(0.0, 0));
             }
             auto p2 = calculate_complexity(partial, problem_size, slice_size);
             auto p3 = calculate_complexity(partial, problem_size, partial);
