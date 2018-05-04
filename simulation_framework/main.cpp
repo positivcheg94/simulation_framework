@@ -17,6 +17,18 @@
 
 namespace po = boost::program_options;
 
+template<typename It>
+void write_to_stream(std::ostream& stream, It begin, It end, std::string separator = "-")
+{
+    stream << *begin;
+    ++begin;
+    while (begin!=end)
+    {
+        stream << separator << *begin;
+        ++begin;
+    }
+}
+
 int main(int argc, char* argv[])
 {
     typedef smpp::SimpleTask                task;
@@ -146,6 +158,15 @@ int main(int argc, char* argv[])
         file.precision(20);
         if (!file.is_open())
             throw std::runtime_error("couldn't open file");
+
+        file << "ProblemSize=" << problem_size << "|||NominalMips" << nominal_mips << "|||Bandwidth" << bandwidth << "|||Ping" << ping << std::endl;
+        file << "Slices=";
+        write_to_stream(file, slices.begin(), slices.end());
+        file << std::endl;
+        file << "MipsMultipliers=";
+        write_to_stream(file, mips.begin(), mips.end());
+        file << std::endl;
+
 
         if(single_player)
         {
