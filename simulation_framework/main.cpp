@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
         if (!file.is_open())
             throw std::runtime_error("couldn't open file");
 
-        file << "ProblemSize=" << problem_size << "|||NominalMips" << nominal_mips << "|||Bandwidth" << bandwidth << "|||Ping" << ping << std::endl;
+        file << "ProblemSize=" << problem_size << "|||NominalMips=" << nominal_mips << "|||Bandwidth=" << bandwidth << "|||Ping=" << ping << std::endl;
         file << "Slices=";
         write_to_stream(file, slices.begin(), slices.end());
         file << std::endl;
