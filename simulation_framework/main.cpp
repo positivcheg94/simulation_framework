@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
             ("task_priority"        , po::value<std::string>()->default_value("min")            , "task scheduling priority"                                    )
             ("proc_priority"        , po::value<std::string>()->default_value("min")            , "processor choosing priority"                                 )
             // task processor
-            ("bandwidth"            , po::value<double>()->default_value(1e8)                   , "bandwidth with each processing unit (one value for all)"     )
+            ("bandwidth"            , po::value<double>()->default_value(8e8)                   , "bandwidth with each processing unit (one value for all)"     )
             ("ping"                 , po::value<double>()->default_value(1e-5)                  , "ping with each processing unit (one value for all)"          )
             // slice params
             ("slices"               , po::value<std::vector<size_t>>()->multitoken()->required(), "slice params (min slice, max slice, step)"                   )

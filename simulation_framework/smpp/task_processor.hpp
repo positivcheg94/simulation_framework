@@ -30,7 +30,7 @@ namespace smpp
         typedef TaskProcessor::return_type	return_type;
 
         TaskProcessorWithTransfer(
-            double bandwidth		= 1e8,      // ~100 mbit/s
+            double bandwidth		= 8e8,      // ~100 mbit/s
             double connection_setup = 0.00001   // time to setup connection
 
         )
